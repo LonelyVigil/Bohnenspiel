@@ -149,7 +149,7 @@ public class Zauberbohne {
    *
    * @return
    */
-   private int bewerten(int move) {
+   private int bewerten3(int move) {
   
    ///DIE AKTUELLE HEURISTIK GEWINNT IMMER MIT 30:40
    //wäre also zum bestehen des projektes geeignet
@@ -199,5 +199,197 @@ public class Zauberbohne {
       wert -= original.getTreasuryOne();
     }
     return wert;
+  }
+  
+  private int bewerten(int move) {
+      Gameboard future = new Gameboard();
+      future = copy.copy();
+      future.doMove(move, false);
+      //start value
+      int value = 0;
+      if(playerOne) {
+	  //do I win beans? does the opponent win beans?
+	  value += 2*future.getTreasuryOne()-copy.getTreasuryOne();
+	  value -= 4*future.getTreasuryTwo()-copy.getTreasuryTwo();
+	  
+	  //attackable own 1, 3 and 5 are problematic
+	  for(int i=0; i<6; i++) {
+	      if(future.getState()[i]==1 || future.getState()[i]==3 || future.getState()[i]==5) {
+		  for(int j=6; j<=11; j++) {
+		      if(copy.getState()[j]==j-i || copy.getState()[j]==12+j-i) {
+			  value-=future.getState()[i]*2;
+		      }
+		  }
+	      }
+	  }
+	  //attackable 1, 3 and 5 on opponent's side are good
+	  for(int i=6; i<=11; i++) {
+	      if(future.getState()[i]==1 || future.getState()[i]==3 || future.getState()[i]==5) {
+		  for(int j=0; j<6; j++) {
+		      if(copy.getState()[j]==j-i || copy.getState()[j]==12+j-i) {
+			  value+=future.getState()[i]*2;
+		      }
+		  }
+	      }
+	  }
+	  
+	  //too many own empty fields are bad
+	  int count =0;
+	  for(int i=0; i<6; i++) {
+	      if(future.getState()[i]==0) {
+		  count++;
+	      }
+	  }
+	  switch(count) {
+	  case 0: value+=2; break;
+	  case 1: value++; break;
+	  case 2: break;
+	  case 3: value--; break;
+	  case 4: value-=3; break;
+	  case 5: value-=5; break;
+	  case 6: value-=7; break;
+	  }
+	  
+	  //many empty fields on opponent's side are good
+	  count =0;
+	  for(int i=6; i<=11; i++) {
+	      if(future.getState()[i]==0) {
+		  count++;
+	      }
+	  }
+	  switch(count) {
+	  case 0: value-=2; break;
+	  case 1: value--; break;
+	  case 2: break;
+	  case 3: value++; break;
+	  case 4: value+=3; break;
+	  case 5: value+=5; break;
+	  case 6: value+=7; break;
+	  }
+	  
+	  //putting more beans on own side is good, otherwise bad
+	  int differenceOwnSide = future.getSumOwnRow(playerOne)-copy.getSumOwnRow(playerOne);
+	  int differenceOtherSide = future.getSumOwnRow(!playerOne)-copy.getSumOwnRow(!playerOne);
+	  if(differenceOwnSide > differenceOtherSide) {
+	      value+=2;
+	  }
+	  else {
+	      value-=2;
+	  }
+	  
+	  //owning fields with a lot beans is good, it's bad, if the opponent has some
+	  for(int i=0; i<6; i++) {
+	      if(copy.getState()[i]>=6) {
+		  value++;
+	      }
+	  }
+	  for(int i=6; i<=11; i++) {
+	      if(copy.getState()[i]>=6) {
+		  value--;
+	      }
+	  }
+	  
+	  //using high numbers if one's low on opportunities is good
+	  if(copy.getState()[move-1]>=10 && move-1<6) {
+	      value+=3;
+	  }
+	  if(copy.getState()[move-1]>=10 && move-1>=6) {
+	      value-=3;
+	  }
+      }
+      
+      else {
+	//do I win beans? does the opponent win beans?
+	  value += 2*future.getTreasuryTwo()-copy.getTreasuryTwo();
+	  value -= 4*future.getTreasuryOne()-copy.getTreasuryOne();
+	  
+	  //attackable own 1, 3 and 5 are problematic
+	  for(int i=6; i<=11; i++) {
+	      if(future.getState()[i]==1 || future.getState()[i]==3 || future.getState()[i]==5) {
+		  for(int j=0; j<6; j++) {
+		      if(copy.getState()[j]==j-i || copy.getState()[j]==12+j-i) {
+			  value-=future.getState()[i]*2;
+		      }
+		  }
+	      }
+	  }
+	 
+	  //attackable 1, 3 and 5 on opponent's side are good
+	  for(int i=0; i<6; i++) {
+	      if(future.getState()[i]==1 || future.getState()[i]==3 || future.getState()[i]==5) {
+		  for(int j=6; j<=11; j++) {
+		      if(copy.getState()[j]==j-i || copy.getState()[j]==12+j-i) {
+			  value+=future.getState()[i]*2;
+		      }
+		  }
+	      }
+	  }
+	  
+	  //too many own empty fields are bad
+	  int count =0;
+	  for(int i=6; i<=11; i++) {
+	      if(future.getState()[i]==0) {
+		  count++;
+	      }
+	  }
+	  switch(count) {
+	  case 0: value+=2; break;
+	  case 1: value++; break;
+	  case 2: break;
+	  case 3: value--; break;
+	  case 4: value-=2; break;
+	  case 5: value-=3; break;
+	  case 6: value-=4; break;
+	  }
+	  
+	  //many empty fields on opponent's side are good
+	  count =0;
+	  for(int i=0; i<6; i++) {
+	      if(future.getState()[i]==0) {
+		  count++;
+	      }
+	  }
+	  switch(count) {
+	  case 0: value-=2; break;
+	  case 1: value--; break;
+	  case 2: break;
+	  case 3: value++; break;
+	  case 4: value+=2; break;
+	  case 5: value+=3; break;
+	  case 6: value+=4; break;
+	  }
+	  
+	  //putting more beans on own side is good, otherwise bad
+	  int differenceOwnSide = future.getSumOwnRow(!playerOne)-copy.getSumOwnRow(!playerOne);
+	  int differenceOtherSide = future.getSumOwnRow(playerOne)-copy.getSumOwnRow(playerOne);
+	  if(differenceOwnSide > differenceOtherSide) {
+	      value+=2;
+	  }
+	  else {
+	      value-=2;
+	  }
+	  
+	  //owning fields with a lot beans is good, it's bad, if the opponent has some
+	  for(int i=6; i<=11; i++) {
+	      if(copy.getState()[i]>=6) {
+		  value++;
+	      }
+	  }
+	  for(int i=0; i<6; i++) {
+	      if(copy.getState()[i]>=6) {
+		  value--;
+	      }
+	  }
+	  
+	//using high numbers if one's low on opportunities is good
+	  if(copy.getState()[move-1]>=10 && move-1>=6) {
+	      value+=3;
+	  }
+	  if(copy.getState()[move-1]>=10 && move-1<6) {
+	      value-=3;
+	  }
+      }
+      
+      return value;
   }
 }
