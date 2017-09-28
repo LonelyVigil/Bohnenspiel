@@ -9,7 +9,7 @@ public class Zauberbohne {
 
   int random = 1;
   int gespeicherterZug = -1;
-  int gewuenschteTiefe = 9;
+  int gewuenschteTiefe = 6;
   Gameboard copy = new Gameboard();
   Gameboard original = new Gameboard();
 
@@ -128,9 +128,7 @@ public class Zauberbohne {
    * @param index
    */
   private void doMove(Integer index) {
-
     original.doMove(index, false);
-
   }
 
   /**
@@ -202,32 +200,33 @@ public class Zauberbohne {
   }
   
   private int bewerten(int move) {
-      Gameboard future = new Gameboard();
-      future = copy.copy();
-      future.doMove(move, false);
+     // Gameboard future = new Gameboard();
+      //future = copy.copy();
+     // future.doMove(move, false);
       //start value
       int value = 0;
       if(playerOne) {
 	  //do I win beans? does the opponent win beans?
-	  value += 2*future.getTreasuryOne()-copy.getTreasuryOne();
-	  value -= 4*future.getTreasuryTwo()-copy.getTreasuryTwo();
+	 // value += 2*future.getTreasuryOne()-copy.getTreasuryOne();
+	//  value -= 4*future.getTreasuryTwo()-copy.getTreasuryTwo();
 	  
 	  //attackable own 1, 3 and 5 are problematic
 	  for(int i=0; i<6; i++) {
-	      if(future.getState()[i]==1 || future.getState()[i]==3 || future.getState()[i]==5) {
+	      if(original.getState()[i]==1 || original.getState()[i]==3 || original.getState()[i]==5) {
 		  for(int j=6; j<=11; j++) {
-		      if(copy.getState()[j]==j-i || copy.getState()[j]==12+j-i) {
-			  value-=future.getState()[i]*2;
+		      if(original.getState()[j]==j-i || original.getState()[j]==12+j-i) {
+			  value-=original.getState()[i]*2;
 		      }
 		  }
 	      }
 	  }
+	  
 	  //attackable 1, 3 and 5 on opponent's side are good
 	  for(int i=6; i<=11; i++) {
-	      if(future.getState()[i]==1 || future.getState()[i]==3 || future.getState()[i]==5) {
+	      if(original.getState()[i]==1 || original.getState()[i]==3 || original.getState()[i]==5) {
 		  for(int j=0; j<6; j++) {
-		      if(copy.getState()[j]==j-i || copy.getState()[j]==12+j-i) {
-			  value+=future.getState()[i]*2;
+		      if(original.getState()[j]==j-i || original.getState()[j]==12+j-i) {
+			  value+=original.getState()[i]*2;
 		      }
 		  }
 	      }
@@ -236,7 +235,7 @@ public class Zauberbohne {
 	  //too many own empty fields are bad
 	  int count =0;
 	  for(int i=0; i<6; i++) {
-	      if(future.getState()[i]==0) {
+	      if(original.getState()[i]==0) {
 		  count++;
 	      }
 	  }
@@ -253,7 +252,7 @@ public class Zauberbohne {
 	  //many empty fields on opponent's side are good
 	  count =0;
 	  for(int i=6; i<=11; i++) {
-	      if(future.getState()[i]==0) {
+	      if(original.getState()[i]==0) {
 		  count++;
 	      }
 	  }
@@ -268,8 +267,8 @@ public class Zauberbohne {
 	  }
 	  
 	  //putting more beans on own side is good, otherwise bad
-	  int differenceOwnSide = future.getSumOwnRow(playerOne)-copy.getSumOwnRow(playerOne);
-	  int differenceOtherSide = future.getSumOwnRow(!playerOne)-copy.getSumOwnRow(!playerOne);
+	  int differenceOwnSide = original.getSumOwnRow(playerOne)-original.getSumOwnRow(playerOne);
+	  int differenceOtherSide = original.getSumOwnRow(!playerOne)-original.getSumOwnRow(!playerOne);
 	  if(differenceOwnSide > differenceOtherSide) {
 	      value+=2;
 	  }
@@ -279,36 +278,36 @@ public class Zauberbohne {
 	  
 	  //owning fields with a lot beans is good, it's bad, if the opponent has some
 	  for(int i=0; i<6; i++) {
-	      if(copy.getState()[i]>=6) {
+	      if(original.getState()[i]>=6) {
 		  value++;
 	      }
 	  }
 	  for(int i=6; i<=11; i++) {
-	      if(copy.getState()[i]>=6) {
+	      if(original.getState()[i]>=6) {
 		  value--;
 	      }
 	  }
 	  
 	  //using high numbers if one's low on opportunities is good
-	  if(copy.getState()[move-1]>=10 && move-1<6) {
+	  if(original.getState()[move-1]>=10 && move-1<6) {
 	      value+=3;
 	  }
-	  if(copy.getState()[move-1]>=10 && move-1>=6) {
+	  if(original.getState()[move-1]>=10 && move-1>=6) {
 	      value-=3;
 	  }
       }
       
       else {
 	//do I win beans? does the opponent win beans?
-	  value += 2*future.getTreasuryTwo()-copy.getTreasuryTwo();
-	  value -= 4*future.getTreasuryOne()-copy.getTreasuryOne();
+	//  value += 2*future.getTreasuryTwo()-copy.getTreasuryTwo();
+	//  value -= 4*future.getTreasuryOne()-copy.getTreasuryOne();
 	  
 	  //attackable own 1, 3 and 5 are problematic
 	  for(int i=6; i<=11; i++) {
-	      if(future.getState()[i]==1 || future.getState()[i]==3 || future.getState()[i]==5) {
+	      if(original.getState()[i]==1 || original.getState()[i]==3 || original.getState()[i]==5) {
 		  for(int j=0; j<6; j++) {
-		      if(copy.getState()[j]==j-i || copy.getState()[j]==12+j-i) {
-			  value-=future.getState()[i]*2;
+		      if(original.getState()[j]==j-i || original.getState()[j]==12+j-i) {
+			  value-=original.getState()[i]*2;
 		      }
 		  }
 	      }
@@ -316,10 +315,10 @@ public class Zauberbohne {
 	 
 	  //attackable 1, 3 and 5 on opponent's side are good
 	  for(int i=0; i<6; i++) {
-	      if(future.getState()[i]==1 || future.getState()[i]==3 || future.getState()[i]==5) {
+	      if(original.getState()[i]==1 || original.getState()[i]==3 || original.getState()[i]==5) {
 		  for(int j=6; j<=11; j++) {
-		      if(copy.getState()[j]==j-i || copy.getState()[j]==12+j-i) {
-			  value+=future.getState()[i]*2;
+		      if(original.getState()[j]==j-i || original.getState()[j]==12+j-i) {
+			  value+=original.getState()[i]*2;
 		      }
 		  }
 	      }
@@ -328,7 +327,7 @@ public class Zauberbohne {
 	  //too many own empty fields are bad
 	  int count =0;
 	  for(int i=6; i<=11; i++) {
-	      if(future.getState()[i]==0) {
+	      if(original.getState()[i]==0) {
 		  count++;
 	      }
 	  }
@@ -345,7 +344,7 @@ public class Zauberbohne {
 	  //many empty fields on opponent's side are good
 	  count =0;
 	  for(int i=0; i<6; i++) {
-	      if(future.getState()[i]==0) {
+	      if(original.getState()[i]==0) {
 		  count++;
 	      }
 	  }
@@ -360,8 +359,8 @@ public class Zauberbohne {
 	  }
 	  
 	  //putting more beans on own side is good, otherwise bad
-	  int differenceOwnSide = future.getSumOwnRow(!playerOne)-copy.getSumOwnRow(!playerOne);
-	  int differenceOtherSide = future.getSumOwnRow(playerOne)-copy.getSumOwnRow(playerOne);
+	  int differenceOwnSide = original.getSumOwnRow(!playerOne)-original.getSumOwnRow(!playerOne);
+	  int differenceOtherSide = original.getSumOwnRow(playerOne)-original.getSumOwnRow(playerOne);
 	  if(differenceOwnSide > differenceOtherSide) {
 	      value+=2;
 	  }
@@ -371,21 +370,21 @@ public class Zauberbohne {
 	  
 	  //owning fields with a lot beans is good, it's bad, if the opponent has some
 	  for(int i=6; i<=11; i++) {
-	      if(copy.getState()[i]>=6) {
+	      if(original.getState()[i]>=6) {
 		  value++;
 	      }
 	  }
 	  for(int i=0; i<6; i++) {
-	      if(copy.getState()[i]>=6) {
+	      if(original.getState()[i]>=6) {
 		  value--;
 	      }
 	  }
 	  
 	//using high numbers if one's low on opportunities is good
-	  if(copy.getState()[move-1]>=10 && move-1>=6) {
+	  if(original.getState()[move-1]>=10 && move-1>=6) {
 	      value+=3;
 	  }
-	  if(copy.getState()[move-1]>=10 && move-1<6) {
+	  if(original.getState()[move-1]>=10 && move-1<6) {
 	      value-=3;
 	  }
       }
