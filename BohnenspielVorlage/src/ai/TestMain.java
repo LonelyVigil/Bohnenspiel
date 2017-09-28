@@ -10,7 +10,10 @@ package ai;
 public class TestMain {
   
  public static void main(String arg[]){
-   Gameboard.getInstance();
+   Zauberbohne z = new Zauberbohne();
+   z.getMove(-1);
+  
+   
  }
 
 }
