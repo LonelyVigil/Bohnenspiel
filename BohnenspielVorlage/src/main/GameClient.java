@@ -4,15 +4,15 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URI;
 
-import ai.BohnenspielAI;
+import ai.Zauberbohne;
 import util.Settings;
 
 /** Auﬂer dem Attribut ai_name darf an dieser Klasse nichts ver‰ndert werden. */
 public class GameClient {
 
-	private static String ai_name = "uuuuu";
+	private static String ai_name = "Zauberbohne";
 	private String gameID;
-	private BohnenspielAI ai;
+	private Zauberbohne ai;
 
 	public static void main(String[] args) throws Exception {
 		try {
@@ -36,7 +36,7 @@ public class GameClient {
 	}
 
 	public GameClient() {
-		this.ai = new BohnenspielAI();
+		this.ai = new Zauberbohne();
 	}
 
 	public void createGame() throws Exception {
