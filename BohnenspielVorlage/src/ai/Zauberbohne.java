@@ -340,14 +340,7 @@ public class Zauberbohne {
 	for (int i = 0; i < 6; i++) {
 	    if (original.getState()[i] == 1 || original.getState()[i] == 3 || original.getState()[i] == 5) {
 		for (int j = 6; j <= 11; j++) {
-		    if (original.getState()[j] == j - i) {
-			value -= (int) (Math.pow(-1, k) * original.getState()[i] * 2);
-		    }
-		}
-	    }
-	    if (original.getState()[i] == 0 || original.getState()[i] == 2 || original.getState()[i] == 4) {
-		for (int j = 6; j <= 11; j++) {
-		    if (original.getState()[j] == 12 + j - i) {
+		    if (original.getState()[j] == j - i || original.getState()[j] == 12 + j - i) {
 			value -= (int) (Math.pow(-1, k) * original.getState()[i] * 2);
 		    }
 		}
@@ -358,14 +351,7 @@ public class Zauberbohne {
 	for (int i = 6; i <= 11; i++) {
 	    if (original.getState()[i] == 1 || original.getState()[i] == 3 || original.getState()[i] == 5) {
 		for (int j = 0; j < 6; j++) {
-		    if (original.getState()[j] == j - i) {
-			value += (int) (Math.pow(-1, k) * original.getState()[i] * 2);
-		    }
-		}
-	    }
-	    if (original.getState()[i] == 0 || original.getState()[i] == 2 || original.getState()[i] == 4) {
-		for (int j = 0; j < 6; j++) {
-		    if (original.getState()[j] == 12 + j - i) {
+		    if (original.getState()[j] == j - i || original.getState()[j] == 12 + j - i) {
 			value += (int) (Math.pow(-1, k) * original.getState()[i] * 2);
 		    }
 		}
