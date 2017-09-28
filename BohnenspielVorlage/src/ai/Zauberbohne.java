@@ -189,7 +189,7 @@ public class Zauberbohne {
 
       value = attackablefields(value, 2);
       value = checkEmptyField(value, 2);
-      value = owningFields(value, 2);
+      value = owningHighFields(value, 2);
 
       // putting more beans on own side is good, otherwise bad
       int differenceOwnSide = original.getSumOwnRow(playerOne) - original.getSumOwnRow(playerOne);
@@ -213,7 +213,7 @@ public class Zauberbohne {
     else {
       value = attackablefields(value, 1);
       value = checkEmptyField(value, 1);
-      value = owningFields(value, 1);
+      value = owningHighFields(value, 1);
 
       // putting more beans on own side is good, otherwise bad
       int differenceOwnSide = original.getSumOwnRow(!playerOne) - original.getSumOwnRow(!playerOne);
@@ -243,7 +243,7 @@ public class Zauberbohne {
    * @param k
    * @return
    */
-  private int owningFields(int value, int k) {
+  private int owningHighFields(int value, int k) {
     // owning fields with a lot beans is good, it's bad, if the opponent has some
     for (int i = 0; i < 6; i++) {
       if (original.getState()[i] >= 6) {
@@ -335,30 +335,42 @@ public class Zauberbohne {
    * @param k
    * @return
    */
-  private int attackablefields(int value, int k) {
-    // attackable own 1, 3 and 5 are problematic
-    for (int i = 0; i < 6; i++) {
-      if (original.getState()[i] == 1 || original.getState()[i] == 3
-          || original.getState()[i] == 5) {
-        for (int j = 6; j <= 11; j++) {
-          if (original.getState()[j] == j - i || original.getState()[j] == 12 + j - i) {
-            value -= (int) (Math.pow(-1, k) * original.getState()[i] * 2);
-          }
-        }
-      }
-    }
+    private int attackablefields(int value, int k) {
+	// attackable own 1, 3 and 5 are problematic
+	for (int i = 0; i < 6; i++) {
+	    if (original.getState()[i] == 1 || original.getState()[i] == 3 || original.getState()[i] == 5) {
+		for (int j = 6; j <= 11; j++) {
+		    if (original.getState()[j] == j - i) {
+			value -= (int) (Math.pow(-1, k) * original.getState()[i] * 2);
+		    }
+		}
+	    }
+	    if (original.getState()[i] == 0 || original.getState()[i] == 2 || original.getState()[i] == 4) {
+		for (int j = 6; j <= 11; j++) {
+		    if (original.getState()[j] == 12 + j - i) {
+			value -= (int) (Math.pow(-1, k) * original.getState()[i] * 2);
+		    }
+		}
+	    }
+	}
 
     // attackable 1, 3 and 5 on opponent's side are good
-    for (int i = 6; i <= 11; i++) {
-      if (original.getState()[i] == 1 || original.getState()[i] == 3
-          || original.getState()[i] == 5) {
-        for (int j = 0; j < 6; j++) {
-          if (original.getState()[j] == j - i || original.getState()[j] == 12 + j - i) {
-            value += (int) (Math.pow(-1, k) * original.getState()[i] * 2);
-          }
-        }
-      }
-    }
+	for (int i = 6; i <= 11; i++) {
+	    if (original.getState()[i] == 1 || original.getState()[i] == 3 || original.getState()[i] == 5) {
+		for (int j = 0; j < 6; j++) {
+		    if (original.getState()[j] == j - i) {
+			value += (int) (Math.pow(-1, k) * original.getState()[i] * 2);
+		    }
+		}
+	    }
+	    if (original.getState()[i] == 0 || original.getState()[i] == 2 || original.getState()[i] == 4) {
+		for (int j = 0; j < 6; j++) {
+		    if (original.getState()[j] == 12 + j - i) {
+			value += (int) (Math.pow(-1, k) * original.getState()[i] * 2);
+		    }
+		}
+	    }
+	}
 
     return value;
   }
