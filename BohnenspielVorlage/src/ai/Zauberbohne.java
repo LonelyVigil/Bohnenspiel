@@ -187,6 +187,9 @@ public class Zauberbohne {
   private int bewerten(int move) {
     int value = 0;
     if (playerOne) {
+      if(!original.moveLeft(-1, true)){
+        value = original.getSumOwnRow(true)/4;
+      }
 
       value = attackablefields(value, 2);
       value = checkEmptyField(value, 2);
@@ -212,6 +215,12 @@ public class Zauberbohne {
     }
 
     else {
+      if(!original.moveLeft(-1, true)){
+        value = original.getSumOwnRow(false)/4;
+      }
+
+      
+      
       value = attackablefields(value, 1);
       value = checkEmptyField(value, 1);
       value = owningHighFields(value, 1);
