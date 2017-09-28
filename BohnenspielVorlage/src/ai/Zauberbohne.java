@@ -1,7 +1,6 @@
 package ai;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 public class Zauberbohne {
 
@@ -9,7 +8,7 @@ public class Zauberbohne {
 
   int random = 1;
   int gespeicherterZug = -1;
-  int gewuenschteTiefe = 15;
+  int gewuenschteTiefe = 14;
   Gameboard copy = new Gameboard();
   Gameboard original = new Gameboard();
 
