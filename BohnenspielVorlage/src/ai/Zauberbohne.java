@@ -9,7 +9,7 @@ public class Zauberbohne {
 
   int random = 1;
   int gespeicherterZug = -1;
-  int gewuenschteTiefe = 7;
+  int gewuenschteTiefe = 9;
   Gameboard copy = new Gameboard();
   Gameboard original = new Gameboard();
 
@@ -30,17 +30,6 @@ public class Zauberbohne {
     // mache gegnerischen Zug
     original.doMove(enemyIndex, true);
 
-    // do {
-    // random = getRandomMove();
-    // System.out.println("state[" + random + "]: " + original.getState()[random - 1]);
-    // } while (original.getState()[random - 1] < 1);
-
-    // mache meinen Zug
-    // System.out.println("gewähltes Feld: " + random);
-    // original.doMove(random);
-
-    // return index;
-    // return random;
     index = getMinMaxMove();
 
     original.doMove(index, true);
@@ -50,34 +39,33 @@ public class Zauberbohne {
 
   }
 
-  private int getRandomMove() {
-    int r;
-    if (playerOne) {
-      r = (int) (Math.random() * 6) + 1;
-      System.out.println(random);
-    } else {
-      r = (int) (Math.random() * 6) + 7;
-      System.out.println(random);
-    }
 
-    return r;
-  }
 
-  // Code aus Wiki
+  /**
+   * Code from Wikipedia for MinMax-Strategy
+   * 
+   * @return
+   */
   private int getMinMaxMove() {
     gespeicherterZug = -1;
     int bewertung = max(1, gewuenschteTiefe, 0);
 
     if (gespeicherterZug == -1) {
       System.out.println("Es gab keine weiteren Züge mehr");
-      return getRandomMove();
-
+      return -1;
     } else {
       return gespeicherterZug;
     }
   }
 
-  // WIKI:
+  /**
+   * Code from Wikipedia for MinMax-Strategy
+   * 
+   * @param spieler
+   * @param tiefe
+   * @param move
+   * @return
+   */
   private int max(int spieler, int tiefe, int move) {
     if (tiefe == 0 || !original.moveLeft(spieler, playerOne)) {
       return bewerten(move);
@@ -104,7 +92,14 @@ public class Zauberbohne {
     return maxWert;
   }
 
-
+  /**
+   * Code from Wikipedia for MinMax-Strategy
+   * 
+   * @param spieler
+   * @param tiefe
+   * @param move
+   * @return
+   */
   private int min(int spieler, int tiefe, int move) {
     if (tiefe == 0 || !original.moveLeft(spieler, playerOne)) {
       return bewerten(move);
@@ -127,49 +122,82 @@ public class Zauberbohne {
     return minWert;
   }
 
-
+  /**
+   * makes move
+   * 
+   * @param index
+   */
   private void doMove(Integer index) {
 
-    original.doMove(index, false); // führt zug aus, veränderd spielstand
+    original.doMove(index, false);
 
   }
-
-  private void undoMove(Gameboard board) {
-    original = board.copy(); // setzt spielstand zurück
-  }
-
-
 
   /**
-   * @author jzalonis
+   * undo the move
+   * 
+   * @param board
+   */
+  private void undoMove(Gameboard board) {
+    original = board.copy();
+  }
+
+
+  
+   /**
+   * Heuristic for strategy
+   *
    * @return
    */
-  private int bewerten(int move) {
+   private int bewerten(int move) {
+  
+   ///DIE AKTUELLE HEURISTIK GEWINNT IMMER MIT 30:40
+   //wäre also zum bestehen des projektes geeignet
+   //Allerdings nur mit Suchtiefe bis 8
+   int wert = 0;
+   if (playerOne) {
+   wert = original.getTreasuryOne() * 4;
+   wert -= original.getTreasuryTwo() * 2;
+  
+   wert += original.getHolesWithLotOfBeans(true);
+   if (original.moveLeft(1, false)) {
+   wert += original.getSumOwnRow(false);
+   }
+   } else {
+   wert = original.getTreasuryTwo() * 4;
+   wert += original.getHolesWithLotOfBeans(false);
+   wert -= original.getTreasuryOne() * 2;
+   if (original.moveLeft(1, true)) {
+   wert += original.getSumOwnRow(true);
+   }
+   }
+  
+   switch (original.getState()[move - 1]) {
+   case 1:
+   wert += 1;
+   break;
+   case 3:
+   wert += 3;
+   break;
+   case 5:
+   wert += 5;
+   break;
+  
+   }
+  
+   return wert;
+   }
+
+//Die hier ist schlechter!
+  private int bewerten2(int move) {
     int wert = 0;
     if (playerOne) {
       wert = original.getTreasuryOne();
-       wert += original.getSumOwnRow(true);
+      wert -= original.getTreasuryTwo();
     } else {
       wert = original.getTreasuryTwo();
-      wert += original.getSumOwnRow(false);
+      wert -= original.getTreasuryOne();
     }
-
-    switch (original.getState()[move-1]) {
-      case 1:
-        wert += 1*5;
-        break;
-      case 3:
-        wert += 3*5;
-        break;
-      case 5:
-        wert += 5*5;
-        break;
-
-    }
-
     return wert;
   }
-
-
-
 }

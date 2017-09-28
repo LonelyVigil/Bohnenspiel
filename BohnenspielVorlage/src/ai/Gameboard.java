@@ -9,27 +9,30 @@ import java.util.ArrayList;
  * @author jzalonis
  */
 public class Gameboard {
-  // Array mit den Bohnenfeldern
-  // Achtung: index von 0 - 11
+  // Array with bean-holes
   private int[] state = new int[12];
 
-  // Schatzkammer links
+  // Schatzkammer red
   private int treasuryOne = 0;
 
-  // Schatzkammer rechts
+  // Schatzkammer blue
   private int treasuryTwo = 0;
 
 
   public Gameboard() {
     initialize();
-    //print();
   }
 
+  /**
+   * Copys the Gameboard with an deep-copy
+   * 
+   * @return
+   */
   public Gameboard copy() {
-     Gameboard other = new Gameboard();
+    Gameboard other = new Gameboard();
     for (int i = 0; i < 12; i++) {
       other.state[i] = this.state[i];
-      
+
     }
     other.treasuryOne = this.treasuryOne;
     other.treasuryTwo = this.treasuryTwo;
@@ -37,13 +40,9 @@ public class Gameboard {
   }
 
 
-  // public static Gameboard getInstance() {
-  // if (instance == null) {
-  // instance = new Gameboard();
-  // }
-  // return instance;
-  // }
-
+  /**
+   * initializes
+   */
   private void initialize() {
     for (int i = 0; i < state.length; i++) {
       state[i] = 6;
@@ -53,13 +52,18 @@ public class Gameboard {
 
   }
 
-  // index geht von 1 ... 12!!!
+  /**
+   * 
+   * @param index Goes from 1.... 12! Watch out!!
+   * @param finaldecisicon just an parameter for printing
+   */
   public void doMove(int index, boolean finaldecisicon) {
+    // if move is not permissible do nothing
     if (index < 1 || index > 12) {
       return;
     }
 
-    // Verteile Bohnen auf andere Felder
+    // distribute beans to other holes
     int sharedBeans = state[index - 1];
     state[index - 1] = 0;
 
@@ -67,77 +71,79 @@ public class Gameboard {
       state[(index + i) % 12]++;
     }
 
+    // is this the red or blue player?
     boolean playerOne = false;
     if (index < 6) {
       playerOne = true;
     }
+    // tests the field of number of beans in it
     testField(index, sharedBeans, playerOne);
 
 
     // print Spielfeld
-//    if(finaldecisicon){
-//      System.out.println("------------------------------------");
-//      print();
-//    }
-   
+    // if(finaldecisicon){
+    // System.out.println("------------------------------------");
+    // print();
+    // }
+
   }
 
-  // player one ist immer der untere (rote) Spieler, mit index 1--6
+  /**
+   * 
+   * @param index index of field that was chosen for the move
+   * @param sharedBeans number of shared beans (so you can calculate the last field)
+   * @param playerOne to check wich player gets the beans
+   */
   private void testField(int index, int sharedBeans, boolean playerOne) {
-
+    // is it filled with 2,4 or 6 beans?
     boolean filled = false;
 
-    // Teste ob letztes Feld mit 2,4 oder 6 Bohnen
+    // check the field
     switch (state[(sharedBeans + index - 1) % 12]) {
 
-      // Feld passend gefüllt
       case 2:
       case 4:
       case 6:
         filled = true;
+        // put beans in right treasury
         if (playerOne) {
           treasuryOne += state[(sharedBeans + index - 1) % 12];
         } else {
           treasuryTwo += state[(sharedBeans + index - 1) % 12];
         }
-
+        // delete the hole
         state[(sharedBeans + index - 1) % 12] = 0;
 
-        // Testet die hinteren Felder
+        // rekursive testing of all other fields
         if (index == 1) {
           testField(12, sharedBeans, playerOne);
         } else {
           testField(index - 1, sharedBeans, playerOne);
         }
-
     }
   }
 
 
-  // player = 1 --> me
-  // player = -1 --> enemy
+  /**
+   * 
+   * @param player 1 --> me, -1 ---> enemy
+   * @param playerOne
+   * @return if any moves are left
+   */
   public boolean moveLeft(int player, boolean playerOne) {
     boolean movePossible = false;
     int i, j;
-    // if(player == 1 && playerOne){
-    // i = 0;
-    // j = 6;
-    // }else{
-    // if(player == 1 && !playerOne){
-    //
-    // }
-    // }
-    //
-    if (player == 1) { // Mein Zug
-      if (playerOne) { // ich bin starter
+
+    if (player == 1) { // its my turn
+      if (playerOne) { // and i am the red player
         i = 0;
         j = 6;
       } else {
         i = 6;
         j = 12;
       }
-    } else { // gegnerischer Zug
-      if (!playerOne) { // gegner hat gestartet
+    } else { // turn of enemy
+      if (!playerOne) { // i am the blue player
         i = 0;
         j = 6;
       } else {
@@ -145,7 +151,7 @@ public class Gameboard {
         j = 12;
       }
     }
-
+    // check if possible move left
     for (int k = i; k < j; k++) {
       if (state[k] > 0) {
         movePossible = true;
@@ -155,6 +161,9 @@ public class Gameboard {
     return movePossible;
   }
 
+  /**
+   * prints the array
+   */
   public void print() {
     System.out.print("\t");
     for (int i = 11; i >= 6; i--) {
@@ -186,23 +195,23 @@ public class Gameboard {
 
 
   /**
-   * @author jzalonis
-   * @param spieler
-   * @return
+   * creates all possible moves
+   * @param spieler of me or enemy
+   * @return list of all possible moves
    */
   public ArrayList<Integer> createPossibleMoves(int spieler, boolean playerOne) {
     int i, j;
     ArrayList<Integer> move = new ArrayList<Integer>();
-    if (spieler == 1) { // Mein Zug
-      if (playerOne) { // ich bin starter
+    if (spieler == 1) { // its my turn
+      if (playerOne) { // and i am the red player
         i = 0;
         j = 6;
       } else {
         i = 6;
         j = 12;
       }
-    } else { // gegnerischer Zug
-      if (!playerOne) { // gegner hat gestartet
+    } else { // turn of enemy
+      if (!playerOne) { // i am the blue player
         i = 0;
         j = 6;
       } else {
@@ -211,34 +220,53 @@ public class Gameboard {
       }
     }
 
+    //add moves
     for (int k = i; k < j; k++) {
       if (state[k] > 0) {
-        move.add(k+1);
+        move.add(k + 1);
       }
     }
 
     return move;
   }
-  
-  public int getTreasuryOne(){
+
+  public int getTreasuryOne() {
     return treasuryOne;
   }
-  
-  public int getTreasuryTwo(){
+
+  public int getTreasuryTwo() {
     return treasuryTwo;
   }
- 
-  public int getSumOwnRow(boolean playerOne){
-    int i,j, sum = 0;
-    if(playerOne){
+
+  public int getSumOwnRow(boolean playerOne) {
+    int i, j, sum = 0;
+    if (playerOne) {
       i = 0;
       j = 6;
-    }else{
+    } else {
       i = 6;
       j = 12;
     }
-    for(int k = i; k < j; k++){
+    for (int k = i; k < j; k++) {
       sum += state[k];
+    }
+    return sum;
+  }
+  
+  
+  public int getHolesWithLotOfBeans(boolean playerOne){
+    int i, j, sum = 0;
+    if (playerOne) {
+      i = 0;
+      j = 6;
+    } else {
+      i = 6;
+      j = 12;
+    }
+    for (int k = i; k < j; k++) {
+      if(state[k] >= 6){
+        sum ++;
+      }
     }
     return sum;
   }
