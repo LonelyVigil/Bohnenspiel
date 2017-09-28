@@ -9,7 +9,7 @@ public class Zauberbohne {
 
   int random = 1;
   int gespeicherterZug = -1;
-  int gewuenschteTiefe = 8;
+  int gewuenschteTiefe = 15;
   Gameboard copy = new Gameboard();
   Gameboard original = new Gameboard();
 
@@ -30,12 +30,10 @@ public class Zauberbohne {
     // mache gegnerischen Zug
     original.doMove(enemyIndex, true);
 
-    index = getMinMaxMove();
+    index = getAlphaBeta();
 
     original.doMove(index, true);
     return index;
-
-
 
   }
 
@@ -46,9 +44,9 @@ public class Zauberbohne {
    * 
    * @return
    */
-  private int getMinMaxMove() {
+  private int getAlphaBeta() {
     gespeicherterZug = -1;
-    int bewertung = max(1, gewuenschteTiefe, 0);
+    int bewertung = max(1, gewuenschteTiefe,0, -1000, 1000);
 
     if (gespeicherterZug == -1) {
       System.out.println("Es gab keine weiteren Züge mehr");
@@ -66,26 +64,27 @@ public class Zauberbohne {
    * @param move
    * @return
    */
-  private int max(int spieler, int tiefe, int move) {
+  private int max(int spieler, int tiefe, int move, int alpha, int beta) {
     if (tiefe == 0 || !original.moveLeft(spieler, playerOne)) {
       return bewerten(move);
     }
 
-    int maxWert = -10000;
+    int maxWert = alpha;
     ArrayList<Integer> moves = original.createPossibleMoves(spieler, playerOne);
     while (!moves.isEmpty()) {
       int currentMove = moves.get(0);
       moves.remove(0);
       Gameboard currentboard = original.copy();
       doMove(currentMove);
-      int wert = min(-spieler, tiefe - 1, currentMove);
+      int wert = min(-spieler, tiefe - 1, currentMove, maxWert, beta);
 
       if (wert > maxWert) {
         maxWert = wert;
-        if (tiefe == gewuenschteTiefe) {
-          gespeicherterZug = currentMove;
-        }
-      }
+        if (maxWert >= beta)
+           break;
+        if (tiefe == gewuenschteTiefe)
+           gespeicherterZug = currentMove;
+     }
       undoMove(currentboard);
     }
 
@@ -100,22 +99,25 @@ public class Zauberbohne {
    * @param move
    * @return
    */
-  private int min(int spieler, int tiefe, int move) {
+  private int min(int spieler, int tiefe, int move, int alpha, int beta) {
     if (tiefe == 0 || !original.moveLeft(spieler, playerOne)) {
       return bewerten(move);
     }
 
-    int minWert = 10000;
+    int minWert = beta;
     ArrayList<Integer> moves = original.createPossibleMoves(spieler, playerOne);
     while (!moves.isEmpty()) {
       int currentMove = moves.get(0);
       moves.remove(0);
       Gameboard currentboard = original.copy();
       doMove(currentMove);
-      int wert = max(-spieler, tiefe - 1, currentMove);
+      int wert = max(-spieler, tiefe - 1, currentMove, alpha, minWert);
 
       if (wert < minWert) {
         minWert = wert;
+        if(minWert <= alpha){
+          break;
+        }
       }
       undoMove(currentboard);
     }
