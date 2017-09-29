@@ -186,14 +186,15 @@ public class Zauberbohne {
 
     private int bewerten(int move) {
 	int value = 0;
-	if (playerOne) {
-	    value += original.getTreasuryOne() * 3;
+	if (playerOne) {   
+	    value += original.getTreasuryOne() * 5;
 
 	    value = attackablefields(value, 2);
 	    value = checkEmptyField(value, 2);
 	    value = owningHighFields(value, 2);
+	    
 	} else {
-	    value += original.getTreasuryTwo() * 3;
+	    value += original.getTreasuryTwo() * 5;
 
 	    value = attackablefields(value, 1);
 	    value = checkEmptyField(value, 1);
@@ -212,14 +213,39 @@ public class Zauberbohne {
    */
     private int owningHighFields(int value, int k) {
 	// owning fields with a lot beans is good, it's bad, if the opponent has some
-	for (int i = 0; i < 6; i++) {
-	    if (original.getState()[i] >= 9) {
-		value += (int) (Math.pow(-1, k) * 1);
+//	for (int i = 0; i < 6; i++) {
+//	    if(original.getState()[i]>=12) {
+//		value += (int) (Math.pow(-1, k) * 5);
+//	    }
+//	    else 
+//	    if (original.getState()[i] >= 9) {
+//		value += (int) (Math.pow(-1, k) * 1);
+//	    }
+//	}
+//	for (int i = 6; i <= 11; i++) {
+//
+//	    if (original.getState()[i] >= 12) {
+//		value -= (int) (Math.pow(-1, k) * 2);
+//	    }
+//	    else 
+//	    if (original.getState()[i] >= 9) {
+//		value -= (int) (Math.pow(-1, k) * 1);
+//	    }
+//	}
+	if(k==2) {
+	    for(int i=0; i<6; i++) {
+
+		    if (original.getState()[i] >= 9) {
+			value += 2;
+		    }
 	    }
 	}
-	for (int i = 6; i <= 11; i++) {
-	    if (original.getState()[i] >= 9) {
-		value -= (int) (Math.pow(-1, k) * 1);
+	else {
+	    for(int i=6; i<12; i++) {
+
+		    if (original.getState()[i] >= 9) {
+			value += 2;
+		    }
 	    }
 	}
 	return value;
@@ -241,11 +267,11 @@ public class Zauberbohne {
 		count++;
 	    }
 	}
-	if(count<=4) {
+	if(count<=5) {
 	    value+=-count+2;
 	}
 	else {
-	    value-=100;
+	    value-=500;
 	}
 		
 	// many empty fields on opponent's side are good
@@ -256,11 +282,11 @@ public class Zauberbohne {
 		count++;
 	    }
 	}
-	if(count<=4) {
+	if(count<=5) {
 	   value+=count-2; 
 	}
 	else {
-	    value+=100;
+	    value+=500;
 	}
 	return value;
     }
@@ -276,7 +302,7 @@ public class Zauberbohne {
 	    if (original.getState()[i] == 1 || original.getState()[i] == 3 || original.getState()[i] == 5) {
 		for (int j = 6; j <= 11; j++) {
 		    if (original.getState()[j] == j - i) {
-			value -= (int) (Math.pow(-1, k) * (original.getState()[i] + 1) * 2);
+			value -= (int) (Math.pow(-1, k) * (original.getState()[i]) * 2);
 			if (i != 0) {
 			    if (original.getState()[i - 1] == 1 || original.getState()[i - 1] == 3
 				    || original.getState()[i - 1] == 5) {
@@ -299,7 +325,7 @@ public class Zauberbohne {
 	    if (original.getState()[i] == 1 || original.getState()[i] == 3 || original.getState()[i] == 5) {
 		for (int j = 0; j < 6; j++) {
 		    if (original.getState()[j] == j - i) {
-			value += (int) (Math.pow(-1, k) * (original.getState()[i] + 1) * 2);
+			value += (int) (Math.pow(-1, k) * (original.getState()[i]) * 2);
 			if (original.getState()[i - 1] == 1 || original.getState()[i - 1] == 3
 				|| original.getState()[i - 1] == 5) {
 			    value -= (int) (Math.pow(-1, k) * (original.getState()[i]) * 2);
