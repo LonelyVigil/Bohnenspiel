@@ -156,7 +156,8 @@ public class Zauberbohne {
 	    // amount of already collected beans, reckoned with
 	    // weight 4
 	    value += original.getTreasuryOne() * 4;
-
+	    value-=original.getTreasuryTwo() * 4;
+	    
 	    //own attackable fields are bad
 	    value = attackablefields(value, 2);
 
@@ -177,6 +178,7 @@ public class Zauberbohne {
 	    // amount of already collected beans, reckoned with
 	    // weight 4
 	    value += original.getTreasuryTwo() * 4;
+	    value-=original.getTreasuryOne() * 4;
 
 	    //own attackable fields are bad
 	    value = attackablefields(value, 1);
