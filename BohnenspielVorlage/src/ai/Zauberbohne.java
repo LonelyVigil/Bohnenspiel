@@ -298,7 +298,7 @@ public class Zauberbohne {
 			// no special case needed here
 			if (original.getState()[i - 1] == 1 || original.getState()[i - 1] == 3
 				|| original.getState()[i - 1] == 5) {
-			    value -= (int) (Math.pow(-1, k) * (original.getState()[i]));
+			    value += (int) (Math.pow(-1, k) * (original.getState()[i]));
 			}
 		    }
 		}
@@ -350,7 +350,7 @@ public class Zauberbohne {
 			// no special case needed here
 			if (original.getState()[i - 1] == 0 || original.getState()[i - 1] == 2
 				|| original.getState()[i - 1] == 4) {
-			    value -= (int) (Math.pow(-1, k) * (original.getState()[i] + 1));
+			    value += (int) (Math.pow(-1, k) * (original.getState()[i] + 1));
 			}
 		    }
 		}
