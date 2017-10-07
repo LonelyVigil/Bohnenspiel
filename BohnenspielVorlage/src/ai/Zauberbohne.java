@@ -157,9 +157,7 @@ public class Zauberbohne {
 	    // weight 4
 	    value += original.getTreasuryOne() * 4;
 
-	    // the second part is calculating the value of currently
-	    // attackable fields on the opponent's side
-	    // regards also if the field before would also bei gained
+	    //own attackable fields are bad
 	    value = attackablefields(value, 2);
 
 	    // the third part is on checking complete empty rows
@@ -169,7 +167,8 @@ public class Zauberbohne {
 
 	    // the last part of the value is the sum of beans on the own side
 	    // weight 1/3
-	    value += original.getSumOwnRow(playerOne) / 3;
+	    value += (int)(original.getSumOwnRow(playerOne) / 3);
+	   
 
 	}
 	// the regarded player is player 2
@@ -179,9 +178,7 @@ public class Zauberbohne {
 	    // weight 4
 	    value += original.getTreasuryTwo() * 4;
 
-	    // the second part is calculating the value of currently
-	    // attackable fields on the opponent's side
-	    // regards also if the field before would also bei gained
+	    //own attackable fields are bad
 	    value = attackablefields(value, 1);
 
 	    // the third part is on checking complete empty rows
@@ -191,8 +188,8 @@ public class Zauberbohne {
 
 	    // the last part of the value is the sum of beans on the own side
 	    // weight 1/3
-	    value += original.getSumOwnRow(!playerOne) / 3;
-
+	    value += (int)(original.getSumOwnRow(!playerOne) / 3);
+	    
 	}
 
 	return value;
@@ -208,155 +205,96 @@ public class Zauberbohne {
      * @return
      */
     private int checkEmptyField(int value, int k) {
+
 	// only empty fields on my side is critical
 	int count = 0;
-	int y = 12 - 6 * ((k + 1) % 2);
-	for (int i = 6 * (k % 2); i < y; i++) {
+	for (int i = 0; i < 6; i++) {
 	    if (original.getState()[i] == 0) {
 		count++;
 	    }
 	}
-	if (count == 6) {
-	    value -= 15;
+	if (k == 2) {
+	    if (count == 6) {
+		value -= 15;
+	    }
+	} else {
+	    if (count == 6) {
+		value += 15;
+	    }
 	}
 
 	// only empty fields on opponent's side is great
 	count = 0;
-	y = 12 - 6 * (k % 2);
-	for (int i = 6 * (k + 1 % 2); i < y; i++) {
+	for (int i = 6; i < 12; i++) {
 	    if (original.getState()[i] == 0) {
 		count++;
 	    }
 	}
-	if (count == 6) {
-	    value += 15;
+	if (k == 2) {
+	    if (count == 6) {
+		value += 15;
+	    }
+	} else {
+	    if (count == 6) {
+		value -= 15;
+	    }
 	}
 
 	return value;
     }
 
     /**
-     * calculate the value of attackable fields on the own and the opponents side
-     * add the value of fields the regarded player can attack subtract the value of
-     * fields the opponent can attack
-     * 
+     * calculate the value of attackable fields on the own side
+     * subtract the value of fields the opponent can attack
      * 
      * @param value
      * @param k
      * @return
      */
     private int attackablefields(int value, int k) {
-	// the values of the fields are just added or subtracted from the state value
-	// weighting issue: the current value is used, not the expected gain
-
-	// two sets of double loops, because for calculating it is important if the
-	// regarded player is
-	// player one or two
-
-	// --------set 1---------
-
-	// regard attackable fields with 1, 3 or 5
-	for (int i = 0; i < 6; i++) {
-	    if (original.getState()[i] == 1 || original.getState()[i] == 3 || original.getState()[i] == 5) {
-		for (int j = 6; j <= 11; j++) {
-		    if (original.getState()[j] == j - i) {
-			// add or subtract current value
-			value -= (int) (Math.pow(-1, k) * (original.getState()[i]));
-
-			// would the field before also be gained?
-
-			// normal case
-			if (i != 0) {
-			    if (original.getState()[i - 1] == 1 || original.getState()[i - 1] == 3
-				    || original.getState()[i - 1] == 5) {
-				value -= (int) (Math.pow(-1, k) * (original.getState()[i]));
-			    }
+	//own directly attackable fields are bad
+	if(k==2) {
+	    for(int i=0; i<6; i++) {
+		//1,3,5
+		if(original.getState()[i]==1 || original.getState()[i]==3 || original.getState()[i]==5) {
+		    for(int j=6; j<12; j++) {
+			if(original.getState()[j]==-j+i+12) {
+			    value-=original.getState()[i];
 			}
-			// this is just the problem, that the field 0's predecessor is 11
-			else {
-			    if (original.getState()[11] == 1 || original.getState()[11] == 3
-				    || original.getState()[11] == 5) {
-				value -= (int) (Math.pow(-1, k) * (original.getState()[i]));
-			    }
+		    }  
+		}
+		//0,2,4
+		if(original.getState()[i]==0 || original.getState()[i]==2 || original.getState()[i]==4) {
+		    for(int j=6; j<12; j++) {
+			if(original.getState()[j]==-j+i+24) {
+			    value-=original.getState()[i];
 			}
-
-		    }
+		    }  
 		}
 	    }
+
 	}
-
-	// regard attackable fields with 1, 3 or 5
-	for (int i = 6; i <= 11; i++) {
-	    if (original.getState()[i] == 1 || original.getState()[i] == 3 || original.getState()[i] == 5) {
-		for (int j = 0; j < 6; j++) {
-		    if (original.getState()[j] == i - j) {
-			// add or subtract current value
-			value += (int) (Math.pow(-1, k) * (original.getState()[i]));
-
-			// would the field before also be gained?
-
-			// no special case needed here
-			if (original.getState()[i - 1] == 1 || original.getState()[i - 1] == 3
-				|| original.getState()[i - 1] == 5) {
-			    value += (int) (Math.pow(-1, k) * (original.getState()[i]));
+	else {
+	    for(int i=6; i<12; i++) {
+		//1,3,5
+		if(original.getState()[i]==1 || original.getState()[i]==3 || original.getState()[i]==5) {
+		    for(int j=0; j<6; j++) {
+			if(original.getState()[j]==i-j) {
+			    value-=original.getState()[i];
+			}
+		    }
+		}
+		//0,2,4
+		if(original.getState()[i]==0 || original.getState()[i]==2 || original.getState()[i]==4) {
+		    for(int j=0; j<6; j++) {
+			if(original.getState()[j]==i-j+12) {
+			    value-=original.getState()[i];
 			}
 		    }
 		}
 	    }
 	}
-
-	// --------set 2---------
-
-	// regard attackable fields with 0, 2 or 4
-	for (int i = 0; i < 6; i++) {
-	    if (original.getState()[i] == 0 || original.getState()[i] == 2 || original.getState()[i] == 4) {
-		for (int j = 6; j <= 11; j++) {
-		    if (original.getState()[j] == j - i + 12) {
-			// add or subtract current value
-			value -= (int) (Math.pow(-1, k) * (original.getState()[i]));
-
-			// would the field before also be gained?
-
-			// normal case
-			if (i != 0) {
-			    if (original.getState()[i - 1] == 0 || original.getState()[i - 1] == 2
-				    || original.getState()[i - 1] == 4) {
-				value -= (int) (Math.pow(-1, k) * (original.getState()[i]));
-			    }
-			}
-			// this is just the problem, that the field 0's predecessor is 11
-			else {
-			    if (original.getState()[11] == 0 || original.getState()[11] == 2
-				    || original.getState()[11] == 4) {
-				value -= (int) (Math.pow(-1, k) * (original.getState()[i]));
-			    }
-			}
-
-		    }
-		}
-	    }
-	}
-
-	// regard attackable fields with 0, 2 or 4
-	for (int i = 6; i <= 11; i++) {
-	    if (original.getState()[i] == 0 || original.getState()[i] == 2 || original.getState()[i] == 4) {
-		for (int j = 0; j < 6; j++) {
-		    if (original.getState()[j] == i - j + 12) {
-			// add or subtract current value
-			value += (int) (Math.pow(-1, k) * (original.getState()[i] + 1));
-
-			// would the field before also be gained?
-
-			// no special case needed here
-			if (original.getState()[i - 1] == 0 || original.getState()[i - 1] == 2
-				|| original.getState()[i - 1] == 4) {
-			    value += (int) (Math.pow(-1, k) * (original.getState()[i] + 1));
-			}
-		    }
-		}
-	    }
-	}
-
+	   
 	return value;
     }
 }
