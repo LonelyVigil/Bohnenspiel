@@ -41,7 +41,7 @@ public class Gameboard {
 
 
   /**
-   * initializes
+   * initializes the board
    */
   private void initialize() {
     for (int i = 0; i < state.length; i++) {
@@ -57,7 +57,7 @@ public class Gameboard {
    * @param index Goes from 1.... 12! Watch out!!
    * @param finaldecisicon just an parameter for printing
    */
-  public void doMove(int index, boolean finaldecisicon) {
+  public void doMove(int index) {
     // if move is not permissible do nothing
     if (index < 1 || index > 12) {
       return;
@@ -79,13 +79,6 @@ public class Gameboard {
     // tests the field of number of beans in it
     testField(index, sharedBeans, playerOne);
 
-
-    // print Spielfeld
-    // if(finaldecisicon){
-    // System.out.println("------------------------------------");
-    // print();
-    // }
-
   }
 
   /**
@@ -95,8 +88,6 @@ public class Gameboard {
    * @param playerOne to check wich player gets the beans
    */
   private void testField(int index, int sharedBeans, boolean playerOne) {
-    // is it filled with 2,4 or 6 beans?
-    boolean filled = false;
 
     // check the field
     switch (state[(sharedBeans + index - 1) % 12]) {
@@ -104,7 +95,7 @@ public class Gameboard {
       case 2:
       case 4:
       case 6:
-        filled = true;
+
         // put beans in right treasury
         if (playerOne) {
           treasuryOne += state[(sharedBeans + index - 1) % 12];
@@ -114,7 +105,7 @@ public class Gameboard {
         // delete the hole
         state[(sharedBeans + index - 1) % 12] = 0;
 
-        // rekursive testing of all other fields
+        // recursive testing of all other fields
         if (index == 1) {
           testField(12, sharedBeans, playerOne);
         } else {
@@ -188,7 +179,10 @@ public class Gameboard {
     System.out.println();
   }
 
-
+  /**
+   * 
+   * @return state
+   */
   public int[] getState() {
     return state;
   }
@@ -196,13 +190,14 @@ public class Gameboard {
 
   /**
    * creates all possible moves
-   * @param spieler of me or enemy
+   * 
+   * @param player: me or enemy
    * @return list of all possible moves
    */
-  public ArrayList<Integer> createPossibleMoves(int spieler, boolean playerOne) {
+  public ArrayList<Integer> createPossibleMoves(int player, boolean playerOne) {
     int i, j;
     ArrayList<Integer> move = new ArrayList<Integer>();
-    if (spieler == 1) { // its my turn
+    if (player == 1) { // its my turn
       if (playerOne) { // and i am the red player
         i = 0;
         j = 6;
@@ -220,7 +215,7 @@ public class Gameboard {
       }
     }
 
-    //add moves
+    // add moves
     for (int k = i; k < j; k++) {
       if (state[k] > 0) {
         move.add(k + 1);
@@ -238,6 +233,11 @@ public class Gameboard {
     return treasuryTwo;
   }
 
+  /**
+   * 
+   * @param playerOne
+   * @return the Sum of all beans in own or enemies row
+   */
   public int getSumOwnRow(boolean playerOne) {
     int i, j, sum = 0;
     if (playerOne) {
@@ -252,22 +252,6 @@ public class Gameboard {
     }
     return sum;
   }
-  
-  
-  public int getHolesWithLotOfBeans(boolean playerOne){
-    int i, j, sum = 0;
-    if (playerOne) {
-      i = 0;
-      j = 6;
-    } else {
-      i = 6;
-      j = 12;
-    }
-    for (int k = i; k < j; k++) {
-      if(state[k] >= 6){
-        sum ++;
-      }
-    }
-    return sum;
-  }
+
+
 }
