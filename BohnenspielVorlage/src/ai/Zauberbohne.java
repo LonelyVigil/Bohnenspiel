@@ -8,7 +8,7 @@ public class Zauberbohne {
   boolean playerOne = false;
 
   int savedMove = -1;
-  int searchDeepness = 8;
+  int searchDeepness = 13;
 
   // original and copied gameboard
   Gameboard copy = new Gameboard();
@@ -146,59 +146,59 @@ public class Zauberbohne {
 
   /**
    * estimate the value of the current state
-   * 
+   * Zauberbohne!!
    * @param move
    * @return value of the current state
    */
-  private int bewerten(int move) {
-    // initial value 0
-    int value = 0;
-    // the regarded player is player 1
-    if (playerOne) {
-      // the first important part of the value is the current
-      // amount of already collected beans, reckoned with
-      // weight 4
-      value += original.getTreasuryOne() * 4;
-      value -= original.getTreasuryTwo() * 4;
-
-      // own attackable fields are bad
-      value = attackablefields(value, 2);
-
-      // the third part is on checking complete empty rows
-      // if the opponent only has empty fields, it's very good
-      // if the regarded player only has empty fields, it's very bad
-      value = checkEmptyField(value, 2);
-
-      // the last part of the value is the sum of beans on the own side
-      // weight 1/3
-      value += (int) (original.getSumOwnRow(playerOne) / 3);
-
-
-    }
-    // the regarded player is player 2
-    else {
-      // the first important part of the value is the current
-      // amount of already collected beans, reckoned with
-      // weight 4
-      value += original.getTreasuryTwo() * 4;
-      value -= original.getTreasuryOne() * 4;
-
-      // own attackable fields are bad
-      value = attackablefields(value, 1);
-
-      // the third part is on checking complete empty rows
-      // if the opponent only has empty fields, it's very good
-      // if the regarded player only has empty fields, it's very bad
-      value = checkEmptyField(value, 1);
-
-      // the last part of the value is the sum of beans on the own side
-      // weight 1/3
-      value += (int) (original.getSumOwnRow(!playerOne) / 3);
-
-    }
-
-    return value;
-  }
+//  private int bewerten(int move) {
+//    // initial value 0
+//    int value = 0;
+//    // the regarded player is player 1
+//    if (playerOne) {
+//      // the first important part of the value is the current
+//      // amount of already collected beans, reckoned with
+//      // weight 4
+//      value += original.getTreasuryOne() * 4;
+//      value -= original.getTreasuryTwo() * 4;
+//
+//      // own attackable fields are bad
+//      value = attackablefields(value, 2);
+//
+//      // the third part is on checking complete empty rows
+//      // if the opponent only has empty fields, it's very good
+//      // if the regarded player only has empty fields, it's very bad
+//      value = checkEmptyField(value, 2);
+//
+//      // the last part of the value is the sum of beans on the own side
+//      // weight 1/3
+//      value += (int) (original.getSumOwnRow(playerOne) / 3);
+//
+//
+//    }
+//    // the regarded player is player 2
+//    else {
+//      // the first important part of the value is the current
+//      // amount of already collected beans, reckoned with
+//      // weight 4
+//      value += original.getTreasuryTwo() * 4;
+//      value -= original.getTreasuryOne() * 4;
+//
+//      // own attackable fields are bad
+//      value = attackablefields(value, 1);
+//
+//      // the third part is on checking complete empty rows
+//      // if the opponent only has empty fields, it's very good
+//      // if the regarded player only has empty fields, it's very bad
+//      value = checkEmptyField(value, 1);
+//
+//      // the last part of the value is the sum of beans on the own side
+//      // weight 1/3
+//      value += (int) (original.getSumOwnRow(!playerOne) / 3);
+//
+//    }
+//
+//    return value;
+//  }
 
   /**
    * check, if the regarded player or the opponent has only empty fields; value-=15 if player has
@@ -304,4 +304,205 @@ public class Zauberbohne {
 
     return value;
   }
+  
+  
+  
+  
+  /** MR:BEAN **/
+  private int bewerten(int move) {
+    
+    int value = 0;
+    if(playerOne) {
+    //do I win beans? does the opponent win beans?
+    value += 0.5*original.getTreasuryOne();
+    value -= original.getTreasuryTwo();
+    
+    //attackable own 1, 3 and 5 are problematic
+    for(int i=0; i<6; i++) {
+        if(original.getState()[i]==1 || original.getState()[i]==3 || original.getState()[i]==5) {
+        for(int j=6; j<=11; j++) {
+            if(original.getState()[j]==j-i || original.getState()[j]==12+j-i) {
+            value-=original.getState()[i]*2;
+            }
+        }
+        }
+    }
+    
+    //attackable 1, 3 and 5 on opponent's side are good
+    for(int i=6; i<=11; i++) {
+        if(original.getState()[i]==1 || original.getState()[i]==3 || original.getState()[i]==5) {
+        for(int j=0; j<6; j++) {
+            if(original.getState()[j]==j-i || original.getState()[j]==12+j-i) {
+            value+=original.getState()[i]*2;
+            }
+        }
+        }
+    }
+    
+    //too many own empty fields are bad
+    int count =0;
+    for(int i=0; i<6; i++) {
+        if(original.getState()[i]==0) {
+        count++;
+        }
+    }
+    switch(count) {
+    case 0: value+=2; break;
+    case 1: value++; break;
+    case 2: break;
+    case 3: value--; break;
+    case 4: value-=3; break;
+    case 5: value-=5; break;
+    case 6: value-=7; break;
+    }
+    
+    //many empty fields on opponent's side are good
+    count =0;
+    for(int i=6; i<=11; i++) {
+        if(original.getState()[i]==0) {
+        count++;
+        }
+    }
+    switch(count) {
+    case 0: value-=2; break;
+    case 1: value--; break;
+    case 2: break;
+    case 3: value++; break;
+    case 4: value+=3; break;
+    case 5: value+=5; break;
+    case 6: value+=7; break;
+    }
+    
+    //putting more beans on own side is good, otherwise bad
+    int differenceOwnSide = original.getSumOwnRow(playerOne)-original.getSumOwnRow(playerOne);
+    int differenceOtherSide = original.getSumOwnRow(!playerOne)-original.getSumOwnRow(!playerOne);
+    if(differenceOwnSide > differenceOtherSide) {
+        value+=2;
+    }
+    else {
+        value-=2;
+    }
+    
+    //owning fields with a lot beans is good, it's bad, if the opponent has some
+    for(int i=0; i<6; i++) {
+        if(original.getState()[i]>=6) {
+        value++;
+        }
+    }
+    for(int i=6; i<=11; i++) {
+        if(original.getState()[i]>=6) {
+        value--;
+        }
+    }
+    
+    //using high numbers if one's low on opportunities is good
+    if(original.getState()[move-1]>=10 && move-1<6) {
+        value+=3;
+    }
+    if(original.getState()[move-1]>=10 && move-1>=6) {
+        value-=3;
+    }
+    }
+    
+    else {
+  //do I win beans? does the opponent win beans?
+  //  value += 2*future.getTreasuryTwo()-copy.getTreasuryTwo();
+  //  value -= 4*future.getTreasuryOne()-copy.getTreasuryOne();
+     
+      value += 0.5*original.getTreasuryTwo();
+      value -= original.getTreasuryOne();
+     
+    //attackable own 1, 3 and 5 are problematic
+    for(int i=6; i<=11; i++) {
+        if(original.getState()[i]==1 || original.getState()[i]==3 || original.getState()[i]==5) {
+        for(int j=0; j<6; j++) {
+            if(original.getState()[j]==j-i || original.getState()[j]==12+j-i) {
+            value-=original.getState()[i]*2;
+            }
+        }
+        }
+    }
+   
+    //attackable 1, 3 and 5 on opponent's side are good
+    for(int i=0; i<6; i++) {
+        if(original.getState()[i]==1 || original.getState()[i]==3 || original.getState()[i]==5) {
+        for(int j=6; j<=11; j++) {
+            if(original.getState()[j]==j-i || original.getState()[j]==12+j-i) {
+            value+=original.getState()[i]*2;
+            }
+        }
+        }
+    }
+    
+    //too many own empty fields are bad
+    int count =0;
+    for(int i=6; i<=11; i++) {
+        if(original.getState()[i]==0) {
+        count++;
+        }
+    }
+    switch(count) {
+    case 0: value+=2; break;
+    case 1: value++; break;
+    case 2: break;
+    case 3: value--; break;
+    case 4: value-=2; break;
+    case 5: value-=3; break;
+    case 6: value-=4; break;
+    }
+    
+    //many empty fields on opponent's side are good
+    count =0;
+    for(int i=0; i<6; i++) {
+        if(original.getState()[i]==0) {
+        count++;
+        }
+    }
+    switch(count) {
+    case 0: value-=2; break;
+    case 1: value--; break;
+    case 2: break;
+    case 3: value++; break;
+    case 4: value+=2; break;
+    case 5: value+=3; break;
+    case 6: value+=4; break;
+    }
+    
+    //putting more beans on own side is good, otherwise bad
+    int differenceOwnSide = original.getSumOwnRow(!playerOne)-original.getSumOwnRow(!playerOne);
+    int differenceOtherSide = original.getSumOwnRow(playerOne)-original.getSumOwnRow(playerOne);
+    if(differenceOwnSide > differenceOtherSide) {
+        value+=2;
+    }
+    else {
+        value-=2;
+    }
+    
+    //owning fields with a lot beans is good, it's bad, if the opponent has some
+    for(int i=6; i<=11; i++) {
+        if(original.getState()[i]>=6) {
+        value++;
+        }
+    }
+    for(int i=0; i<6; i++) {
+        if(original.getState()[i]>=6) {
+        value--;
+        }
+    }
+    
+  //using high numbers if one's low on opportunities is good
+    if(original.getState()[move-1]>=10 && move-1>=6) {
+        value+=3;
+    }
+    if(original.getState()[move-1]>=10 && move-1<6) {
+        value-=3;
+    }
+    }
+    
+    return value;
+}
+  
+  
+  
+  
 }
