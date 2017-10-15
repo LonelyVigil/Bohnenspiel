@@ -8,7 +8,7 @@ public class Zauberbohne {
   boolean playerOne = false;
 
   int savedMove = -1;
-  int searchDeepness = 13;
+  int searchDeepness = 15;
 
   // original and copied gameboard
   Gameboard copy = new Gameboard();
